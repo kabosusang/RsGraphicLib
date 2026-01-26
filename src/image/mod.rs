@@ -6,10 +6,10 @@ pub mod format;
 
 pub struct image;
 
-pub impl image {
-	
-
-
 
 	
-}
+
+
+
+	
+
