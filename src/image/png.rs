@@ -1,3 +1,95 @@
+/** PNG图片格式解析
+PTLE : 调色板数据块PLTE(palette chunk)包含有与索引彩色图像(indexed-color image)相关的彩色变换数据
+
+IDAT : 图像数据块IDAT(image data chunk)：它存储实际的数据，在数据流中可包含多个连续顺序的图像数据块。
+
+IEND : 图像结束数据IEND(image trailer chunk)：它用来标记PNG文件或者数据流已经结束，并且必须要放在文件的尾部。
+*/
+
+/// png文件中的固定签名
+pub struct PngSignature {}
+
+impl PngSignature {
+    //PNG 格式文件头
+    pub const IMAGE_HEAD: &'static [u8] = &[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+    //IEND PNG格式结尾 ：它用来标记PNG文件或者数据流已经结束
+    pub const IMAGE_END: &'static [u8] = &[
+        0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+    ];
+}
+
+///PNG Chuck
+///
+///PNG分为关键数据块(critical chuck)
+///和辅助数据块(ancillary chunks)
+
+struct PngChuck {
+    ///数据块的长度
+    length: [u8; 4],
+    ///数据块的类型
+    chuck_type: [u8; 4],
+
+    ///Chuch Data 数据块数据
+    // chuck_data : [u32]
+
+    //CRC校验
+    crc_check: [u8; 4],
+}
+
+/// IHDR数据块 -> PNG格式的第一个数据块
+///
+/// width : 图像宽度
+/// height : 图像高度
+/// -----------------------------------
+/// bit_depth :
+/// 1,2,4,8    -> 索引彩色图像
+/// 1,2,4,6,16 -> 灰度图像  
+/// 8,16       -> 真彩色图像
+/// ------------------------------------
+/// color_type -> 颜色类型
+/// 0 : 灰度图像  1,2,4,8
+/// 2 : 真彩色图像 8,16
+/// 3 : 索引彩色图像 1,2,4,8
+/// 4 : 带α通道数据的灰度图像 8,16
+/// 6 : 带α通道数据的真彩色图像 8,16
+
+struct IHDRChuck {
+    ///图像宽度
+    width: i32,
+
+    ///图像高度
+    height: i32,
+
+    ///图像深度
+    bit_depth: u8,
+
+    ///颜色类型
+    color_type: u8,
+
+    ///压缩方法(LZ77派生方法)
+    compression_method: u8,
+
+    ///滤波器方法
+    filter_method: u8,
+
+    ///隔行扫描方法
+    interlace_method: u8,
+}
+
+
+
+pub struct PNGImage{
+	//PNG文件格式固定签名
+	png_signature : PngSignature,
+
+	
+	
+
+
+	
+}
+
 
 
 

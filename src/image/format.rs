@@ -2,6 +2,8 @@
 
 */
 
+use super::png::PngSignature;
+
 #[derive(Copy, Clone)]
 pub enum ImageFormat {
     Png,
@@ -11,12 +13,9 @@ pub enum ImageFormat {
 }
 
 impl ImageFormat {
-    //PNG 格式文件头
-    const IMAGE_MAGIC: &'static [u8] = &[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-
     pub fn detect_format(data: &[u8]) -> Self {
         match data {
-            _ if data.starts_with(Self::IMAGE_MAGIC) => ImageFormat::Png,
+            _ if data.starts_with(PngSignature::IMAGE_HEAD) => ImageFormat::Png,
             _ => ImageFormat::Unknow,
         }
     }
