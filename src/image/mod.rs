@@ -4,7 +4,7 @@
 
 pub mod format;
 mod png;
-
+mod image_processor;
 
 
 

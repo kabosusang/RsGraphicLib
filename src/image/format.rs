@@ -1,7 +1,6 @@
 /** 用来获取或者读取图片的元信息 判断图片类型
-
+    也存储图像的数据
 */
-
 use super::png::PngSignature;
 
 #[derive(Copy, Clone)]
@@ -29,3 +28,4 @@ impl ImageFormat {
         }
     }
 }
+

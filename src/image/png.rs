@@ -1,12 +1,12 @@
-/** PNG图片格式解析
-PTLE : 调色板数据块PLTE(palette chunk)包含有与索引彩色图像(indexed-color image)相关的彩色变换数据
+use super::image_processor::*;
 
-IDAT : 图像数据块IDAT(image data chunk)：它存储实际的数据，在数据流中可包含多个连续顺序的图像数据块。
-
-IEND : 图像结束数据IEND(image trailer chunk)：它用来标记PNG文件或者数据流已经结束，并且必须要放在文件的尾部。
-*/
-
+/// PNG图片格式解析
+///
+///PTLE : 调色板数据块PLTE(palette chunk)包含有与索引彩色图像(indexed-color image)相关的彩色变换数据
+///IDAT : 图像数据块IDAT(image data chunk)：它存储实际的数据，在数据流中可包含多个连续顺序的图像数据块。
+///IEND : 图像结束数据IEND(image trailer chunk)：它用来标记PNG文件或者数据流已经结束，并且必须要放在文件的尾部。
 /// png文件中的固定签名
+#[derive(Debug)]
 pub struct PngSignature {}
 
 impl PngSignature {
@@ -19,14 +19,14 @@ impl PngSignature {
     ];
 }
 
-///PNG Chuck
+/// PNG Chuck
 ///
-///PNG分为关键数据块(critical chuck)
-///和辅助数据块(ancillary chunks)
-
+/// PNG分为关键数据块(critical chuck)
+/// 和辅助数据块(ancillary chunks)
 struct PngChuck {
     ///数据块的长度
     length: [u8; 4],
+
     ///数据块的类型
     chuck_type: [u8; 4],
 
@@ -54,44 +54,82 @@ struct PngChuck {
 /// 4 : 带α通道数据的灰度图像 8,16
 /// 6 : 带α通道数据的真彩色图像 8,16
 
-struct IHDRChuck {
+#[derive(Debug)]
+pub struct IHDRChuck {
     ///图像宽度
-    width: i32,
+    ///注意: PNG格式是大端格式不变
+    pub width: u32,
 
     ///图像高度
-    height: i32,
+    pub height: u32,
 
     ///图像深度
-    bit_depth: u8,
+    pub bit_depth: u8,
 
     ///颜色类型
-    color_type: u8,
+    pub color_type: u8,
 
     ///压缩方法(LZ77派生方法)
-    compression_method: u8,
+    pub compression_method: u8,
 
     ///滤波器方法
-    filter_method: u8,
+    pub filter_method: u8,
 
     ///隔行扫描方法
-    interlace_method: u8,
+    pub interlace_method: u8,
 }
 
+impl IHDRChuck {
+    /// parse
+    pub fn from_bytes(data: &[u8]) -> Option<Self> {
+        // 检查IHDR固定数据块
+        if data.len() != 13 {
+            return None;
+        }
 
+        Some(Self {
+            // 直接索引，更高效
+            width: u32::from_be_bytes(data[0..4].try_into().ok()?),
+            height: u32::from_be_bytes(data[4..8].try_into().ok()?),
+            bit_depth: data[8],
+            color_type: data[9],
+            compression_method: data[10],
+            filter_method: data[11],
+            interlace_method: data[12],
+        })
+    }
+}
 
-pub struct PNGImage{
-	//PNG文件格式固定签名
-	png_signature : PngSignature,
+#[derive(Debug)]
+struct PNGImage {
+    /// PNG文件格式固定签名
+    ///
+    /// 包含必须的头签名和尾签名
+    png_signature: PngSignature,
 
+    /// 二进制文件的源数据
+    raw_data: ImageData,
+
+    /// IHDR数据块
+    ihdr_chuck: IHDRChuck,
+}
+
+impl PNGImage {
 	
-	
-
 
 	
 }
 
+impl ImageProcess for PNGImage {
+    fn width(&self) -> u32 {
+        todo!()
+    }
 
+    fn height(&self) -> u32 {
+        todo!()
+    }
 
-
-
-
+    fn colot_type(&self) -> ImageColorTypeDepth {
+        todo!()
+    }
+}
