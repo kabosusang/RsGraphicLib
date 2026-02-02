@@ -1,4 +1,4 @@
-use super::image_processor::*;
+use super::{image_error::{ImageError, PNGImageError}, image_processor::*};
 
 /// PNG图片格式解析
 ///
@@ -54,7 +54,7 @@ struct PngChuck {
 /// 4 : 带α通道数据的灰度图像 8,16
 /// 6 : 带α通道数据的真彩色图像 8,16
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct IHDRChuck {
     ///图像宽度
     ///注意: PNG格式是大端格式不变
@@ -81,7 +81,9 @@ pub struct IHDRChuck {
 
 impl IHDRChuck {
     /// parse
-    pub fn from_bytes(data: &[u8]) -> Option<Self> {
+    pub fn from_bytes<T: AsRef<[u8]>>(data: T) -> Option<Self> {
+        let data: &[u8] = data.as_ref();
+
         // 检查IHDR固定数据块
         if data.len() != 13 {
             return None;
@@ -100,8 +102,28 @@ impl IHDRChuck {
     }
 }
 
+/// 快速文件读取存储
+#[derive(Debug, Clone)]
+pub struct PNGImagePreview {
+    /// IHDR元数据
+    ihdr_chuck: IHDRChuck,
+}
+
+
+impl PNGImagePreview {
+    pub fn build<T: AsRef<[u8]>>(data: T) -> Result<Self,ImageError> {
+        let bytes = data.as_ref();
+
+        match IHDRChuck::from_bytes(bytes) {
+            Some(chuck) => Ok(Self { ihdr_chuck: chuck }),
+            None => Err(ImageError::PngError(PNGImageError::InvalidIHDR))
+        }
+    }
+}
+
+/// 完整文件存储
 #[derive(Debug)]
-struct PNGImage {
+pub struct PNGImage {
     /// PNG文件格式固定签名
     ///
     /// 包含必须的头签名和尾签名
@@ -115,9 +137,7 @@ struct PNGImage {
 }
 
 impl PNGImage {
-	
-
-	
+    pub fn build(data: &[u8]) {}
 }
 
 impl ImageProcess for PNGImage {

@@ -37,14 +37,8 @@ pub struct ImageData {
 }
 
 impl ImageData {
-    pub fn build(&mut self,data : Vec<u8>)->(){
-		self.raw_data = data;
-		()
+    pub fn read(&mut self, data: Vec<u8>) -> () {
+        self.raw_data = data;
+        ()
+    }
 }
-}
-
-
-
-
-
-

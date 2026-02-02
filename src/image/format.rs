@@ -1,31 +1,55 @@
 /** 用来获取或者读取图片的元信息 判断图片类型
     也存储图像的数据
 */
-use super::png::PngSignature;
+use super::{
+    image_error::ImageError,
+    png::{PNGImage, PNGImagePreview, PngSignature},
+};
 
-#[derive(Copy, Clone)]
-pub enum ImageFormat {
-    Png,
+#[derive(Debug, Clone)]
+pub enum ImageFormatPreview {
+    Png(PNGImagePreview),
     Jpg,
     Gif,
     Unknow,
 }
 
-impl ImageFormat {
-    pub fn detect_format(data: &[u8]) -> Self {
+impl ImageFormatPreview {
+    pub fn detect_format(data: &[u8]) -> Result<Self, ImageError> {
         match data {
-            _ if data.starts_with(PngSignature::IMAGE_HEAD) => ImageFormat::Png,
-            _ => ImageFormat::Unknow,
+            _ if data.starts_with(PngSignature::IMAGE_HEAD) => {
+                const head_len: usize = PngSignature::IMAGE_HEAD.len();
+                assert!(
+                    data.len() >= head_len,
+                    "Png data too shot: {} bytes",
+                    data.len()
+                );
+
+				let ihdr_data_start = head_len;
+                let body: &[u8] = &data[ihdr_data_start .. ihdr_data_start + 13];
+
+                match PNGImagePreview::build(body) {
+                    Ok(preview) => Ok(ImageFormatPreview::Png(preview)),
+                    Err(e) => Err(e), // 传播错误
+                }
+            }
+            _ => Ok(ImageFormatPreview::Unknow),
         }
     }
 
     pub fn extension(&self) -> Option<&'static str> {
         match self {
-            ImageFormat::Png => Some("png"),
-            ImageFormat::Gif => Some("gif"),
-            ImageFormat::Jpg => Some("jpg"),
-            ImageFormat::Unknow => None,
+            ImageFormatPreview::Png(_) => Some("png"),
+            ImageFormatPreview::Gif => Some("gif"),
+            ImageFormatPreview::Jpg => Some("jpg"),
+            ImageFormatPreview::Unknow => None,
         }
     }
 }
 
+
+	
+#[derive(Debug)]
+pub enum ImageFormat {
+    Png(PNGImage),
+}
