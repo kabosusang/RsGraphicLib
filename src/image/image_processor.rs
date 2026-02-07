@@ -21,6 +21,8 @@ pub enum ImageColorTypeDepth {
 
     ///带α通道数据的真彩色图像
     AlphaTrueColor(u8),
+
+    Unknow,
 }
 
 pub trait ImageProcess {

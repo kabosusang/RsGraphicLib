@@ -1,4 +1,9 @@
-use super::{image_error::{ImageError, PNGImageError}, image_processor::*};
+use std::mem;
+
+use super::{
+    image_error::{ImageError, PNGImageError},
+    image_processor::{self, *},
+};
 
 /// PNG图片格式解析
 ///
@@ -109,14 +114,34 @@ pub struct PNGImagePreview {
     ihdr_chuck: IHDRChuck,
 }
 
-
 impl PNGImagePreview {
-    pub fn build<T: AsRef<[u8]>>(data: T) -> Result<Self,ImageError> {
+    pub fn build<T: AsRef<[u8]>>(data: T) -> Result<Self, ImageError> {
         let bytes = data.as_ref();
 
         match IHDRChuck::from_bytes(bytes) {
             Some(chuck) => Ok(Self { ihdr_chuck: chuck }),
-            None => Err(ImageError::PngError(PNGImageError::InvalidIHDR))
+            None => Err(ImageError::PngError(PNGImageError::InvalidIHDR)),
+        }
+    }
+}
+
+impl ImageProcess for PNGImagePreview {
+    fn width(&self) -> u32 {
+        self.ihdr_chuck.width
+    }
+
+    fn height(&self) -> u32 {
+        self.ihdr_chuck.height
+    }
+
+    fn colot_type(&self) -> ImageColorTypeDepth {
+        match self.ihdr_chuck.color_type {
+            0 => ImageColorTypeDepth::GrayScale(self.ihdr_chuck.bit_depth),
+            2 => ImageColorTypeDepth::TrueColor(self.ihdr_chuck.bit_depth),
+            3 => ImageColorTypeDepth::IndexedColor(self.ihdr_chuck.bit_depth),
+            4 => ImageColorTypeDepth::AlphaGrayScale(self.ihdr_chuck.bit_depth),
+            6 => ImageColorTypeDepth::AlphaTrueColor(self.ihdr_chuck.bit_depth),
+            _ => ImageColorTypeDepth::Unknow,
         }
     }
 }

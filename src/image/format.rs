@@ -3,6 +3,7 @@
 */
 use super::{
     image_error::ImageError,
+    image_processor::ImageProcess,
     png::{PNGImage, PNGImagePreview, PngSignature},
 };
 
@@ -25,9 +26,8 @@ impl ImageFormatPreview {
                     data.len()
                 );
 
-				let ihdr_data_start = head_len;
-                let body: &[u8] = &data[ihdr_data_start .. ihdr_data_start + 13];
-
+                let ihdr_data_start = head_len + 8;
+                let body: &[u8] = &data[ihdr_data_start..ihdr_data_start + 13];
                 match PNGImagePreview::build(body) {
                     Ok(preview) => Ok(ImageFormatPreview::Png(preview)),
                     Err(e) => Err(e), // 传播错误
@@ -47,8 +47,35 @@ impl ImageFormatPreview {
     }
 }
 
+impl ImageProcess for ImageFormatPreview {
+    fn width(&self) -> u32 {
+        match self {
+            ImageFormatPreview::Png(pv) => pv.width(),
+            ImageFormatPreview::Jpg => todo!(),
+            ImageFormatPreview::Gif => todo!(),
+            ImageFormatPreview::Unknow => todo!(),
+        }
+    }
 
-	
+    fn height(&self) -> u32 {
+        match self {
+            ImageFormatPreview::Png(pv) => pv.height(),
+            ImageFormatPreview::Jpg => todo!(),
+            ImageFormatPreview::Gif => todo!(),
+            ImageFormatPreview::Unknow => todo!(),
+        }
+    }
+
+    fn colot_type(&self) -> super::image_processor::ImageColorTypeDepth {
+        match self {
+            ImageFormatPreview::Png(pv) => pv.colot_type(),
+            ImageFormatPreview::Jpg => todo!(),
+            ImageFormatPreview::Gif => todo!(),
+            ImageFormatPreview::Unknow => todo!(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum ImageFormat {
     Png(PNGImage),

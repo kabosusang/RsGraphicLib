@@ -10,7 +10,7 @@ pub mod format;
 mod png;
 
 mod image_error;
-mod image_processor;
+pub mod image_processor;
 
 ///快速预览读取
 ///默认读取文件的前40个字节
