@@ -5,7 +5,6 @@
 /// u8 表示的是深度的具体数据
 /// png -> IHDR : Color Type ,Bit Depth
 /// png根据读取的ColorType指定位深度
-
 pub enum ImageColorTypeDepth {
     ///索引彩色图像(1,2,4,8)
     IndexedColor(u8),
@@ -23,6 +22,23 @@ pub enum ImageColorTypeDepth {
     AlphaTrueColor(u8),
 
     Unknow,
+}
+
+impl std::fmt::Display for ImageColorTypeDepth {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ImageColorTypeDepth::IndexedColor(depth) => write!(f, "IndexedColor Depth: {}", depth),
+            ImageColorTypeDepth::GrayScale(depth) => write!(f, "GrayScale Depth: {}", depth),
+            ImageColorTypeDepth::TrueColor(depth) => write!(f, "TrueColor Depth: {}", depth),
+            ImageColorTypeDepth::AlphaGrayScale(depth) => {
+                write!(f, "AlphaGrayScale Depth: {}", depth)
+            }
+            ImageColorTypeDepth::AlphaTrueColor(depth) => {
+                write!(f, "AlphaTrueColor Depth: {}", depth)
+            }
+            ImageColorTypeDepth::Unknow => write!(f, "UnKnow ColorType"),
+        }
+    }
 }
 
 pub trait ImageProcess {

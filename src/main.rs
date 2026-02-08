@@ -4,9 +4,10 @@ fn main() {
     let preview = image::open_preview("fnm.png");
     match preview {
         Ok(pre) => {
-            println!("图像格式: {:#?}", pre.extension().unwrap());
+            println!("图像格式: {:}", pre.extension().unwrap());
             println!("图像宽度: {}", pre.width());
             println!("图像高度: {}", pre.height());
+            println!("图像颜色类型: {:}", pre.colot_type());
         }
         Err(e) => {
             eprint!("{:}", e)
