@@ -95,7 +95,7 @@ impl IHDRChuck {
         }
 
         Some(Self {
-            // 直接索引，更高效
+            //IHDR赋值
             width: u32::from_be_bytes(data[0..4].try_into().ok()?),
             height: u32::from_be_bytes(data[4..8].try_into().ok()?),
             bit_depth: data[8],
@@ -162,7 +162,34 @@ pub struct PNGImage {
 }
 
 impl PNGImage {
-    pub fn build(data: &[u8]) {}
+    pub fn build<T: AsRef<[u8]>>(data: T) -> Result<Self, ImageError> {
+        let bytes = data.as_ref();
+		//PNG文件头格式
+        const head_len: usize = PngSignature::IMAGE_HEAD.len();
+        assert!(
+            bytes.len() >= head_len,
+            "Png data too shot: {} bytes",
+            bytes.len()
+        );
+
+		//IHDR块解析
+        let ihdr_data_start = head_len + 8;
+        let body: &[u8] = &bytes[ihdr_data_start..ihdr_data_start + 13];
+
+        let ihdrchuck = IHDRChuck::from_bytes(body).unwrap_or_else(
+			return ImageError::PngError(PNGImageError::InvalidIHDR);
+);
+
+		
+
+
+
+
+
+
+
+		
+    }
 }
 
 impl ImageProcess for PNGImage {

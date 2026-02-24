@@ -44,5 +44,9 @@ pub fn open<P: AsRef<Path>>(path: P) -> Result<ImageFormat, ImageError> {
     let path_str = path_ref.display().to_string(); // 先获取路径字符串
     let bytes = std::fs::read(path_ref).map_err(|e| ImageError::Io(e, path_str.clone()))?; // 手动转换并包含径路
 
+
+
+	
+
     todo!()
 }

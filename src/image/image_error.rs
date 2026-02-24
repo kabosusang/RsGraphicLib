@@ -7,8 +7,9 @@ pub enum ImageError {
     FileTooSmall(String),
     ///格式不支持
     UnSupportedFormat(String),
-
+	///png错误
 	PngError(PNGImageError),
+
 }
 
 impl From<std::io::Error> for ImageError {

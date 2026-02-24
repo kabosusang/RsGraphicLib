@@ -86,3 +86,15 @@ impl ImageProcess for ImageFormatPreview {
 pub enum ImageFormat {
     Png(PNGImage),
 }
+
+impl ImageFormat {
+    pub fn detect_format(data: &[u8]) -> Result<Self, ImageError> {
+		
+
+
+		
+    }
+}
+
+
+
