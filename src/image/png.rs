@@ -164,23 +164,37 @@ pub struct PNGImage {
 impl PNGImage {
     pub fn build<T: AsRef<[u8]>>(data: T) -> Result<Self, ImageError> {
         let bytes = data.as_ref();
-		//PNG文件头格式
-        const head_len: usize = PngSignature::IMAGE_HEAD.len();
+        //PNG文件头格式
+        const HEAD_LEN: usize = PngSignature::IMAGE_HEAD.len();
         assert!(
-            bytes.len() >= head_len,
+            bytes.len() >= HEAD_LEN,
             "Png data too shot: {} bytes",
             bytes.len()
         );
 
-		//IHDR块解析
-        let ihdr_data_start = head_len + 8;
+        //IHDR块解析
+        let ihdr_data_start = HEAD_LEN + 8;
         let body: &[u8] = &bytes[ihdr_data_start..ihdr_data_start + 13];
 
-        let ihdrchuck = IHDRChuck::from_bytes(body).unwrap_or_else(
-			return ImageError::PngError(PNGImageError::InvalidIHDR);
-);
+        let ihdrchuck = match IHDRChuck::from_bytes(body) {
+            Some(chuck) => chuck,
+            None => return Err(ImageError::PngError(PNGImageError::InvalidIHDR)),
+        };
 
-		
+        let mut png_pos = HEAD_LEN;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
